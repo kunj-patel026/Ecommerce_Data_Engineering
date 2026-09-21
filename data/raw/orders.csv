@@ -1,0 +1,13 @@
+order_id,customer_id,order_date,status
+O001,C001,2025-06-01,Completed
+O002,C002,2025-06-02,Completed
+O003,C003,2025-06-03,Cancelled
+O004,C001,2025-06-05,Completed
+O005,C004,2025-06-07,Completed
+O006,C005,2025-06-08,Pending
+O007,C006,2025-06-10,Completed
+O008,C007,2025-06-12,Completed
+O009,C008,2025-06-15,Completed
+O010,C009,2025-06-18,Cancelled
+O011,C010,2025-06-20,Completed
+O012,C002,2025-06-22,Completed

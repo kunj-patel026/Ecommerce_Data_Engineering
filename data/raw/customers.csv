@@ -1,0 +1,11 @@
+customer_id,name,email,city,signup_date
+C001,Rahul Sharma,rahul@gmail.com,Pune,2025-01-15
+C002,Priya Patel,priya@gmail.com,Mumbai,2025-02-10
+C003,Amit Shah,amit@gmail.com,Ahmedabad,2025-02-18
+C004,Neha Joshi,neha@gmail.com,Pune,2025-03-05
+C005,Rohan Mehta,rohan@gmail.com,Bangalore,2025-03-20
+C006,Anjali Verma,anjali@gmail.com,Delhi,2025-04-12
+C007,Vikas Kumar,vikas@gmail.com,Hyderabad,2025-04-25
+C008,Pooja Singh,pooja@gmail.com,Pune,2025-05-08
+C009,Karan Patel,karan@gmail.com,Mumbai,2025-05-22
+C010,Sneha Desai,sneha@gmail.com,Surat,2025-06-15
