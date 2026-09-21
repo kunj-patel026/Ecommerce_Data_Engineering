@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual Environment
+venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Spark
+spark-warehouse/
+
+# Processed data
+data/processed/*
+
+# Logs
+logs/
+
+# OS files
+Thumbs.db
+.DS_Store
