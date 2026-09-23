@@ -6,49 +6,57 @@
 
 # E-Commerce Data Engineering Pipeline
 
-An end-to-end **Data Engineering project** that demonstrates how raw e-commerce data can be transformed, validated, processed, and analyzed using **Python, SQL, Apache Spark, and PySpark**.
+An end-to-end **Data Engineering project** that demonstrates how raw e-commerce data can be extracted, transformed, validated, stored, and analyzed using **Python, Pandas, SQL, Apache Spark, and PySpark**.
 
-The project simulates a real-world data pipeline where multiple raw CSV datasets are joined and transformed into a processed **Parquet dataset**, followed by data quality validation and business analytics.
+The project simulates a real-world e-commerce data pipeline using multiple raw CSV datasets. The data is processed through both a **Pandas-based ETL pipeline** and a **PySpark-based ETL pipeline**, followed by data quality validation and business analytics.
 
 ---
 
 ## Project Architecture
 
 ```text
-                    RAW DATA
-                       │
-                       ▼
-              ┌─────────────────┐
-              │   CSV Datasets  │
-              │                 │
-              │ Customers       │
-              │ Products        │
-              │ Orders          │
-              │ Order Items     │
-              └────────┬────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │   PySpark ETL   │
-              │                 │
-              │ Read CSV        │
-              │ Join datasets   │
-              │ Calculate       │
-              │ Revenue         │
-              └────────┬────────┘
-                       │
-                       ▼
-              ┌─────────────────┐
-              │     Parquet     │
-              │  Processed Data │
-              └────────┬────────┘
-                       │
-             ┌─────────┴─────────┐
-             ▼                   ▼
-      ┌─────────────────┐  ┌─────────────────┐
-      │ Data Quality    │  │ Spark Analytics │
-      │     Checks      │  │                 │
-      └─────────────────┘  └─────────────────┘
+                         RAW DATA
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │   CSV Datasets    │
+                  │                   │
+                  │ Customers         │
+                  │ Products          │
+                  │ Orders            │
+                  │ Order Items       │
+                  └─────────┬─────────┘
+                            │
+                ┌───────────┴───────────┐
+                │                       │
+                ▼                       ▼
+       ┌─────────────────┐     ┌─────────────────┐
+       │   Pandas ETL    │     │   PySpark ETL   │
+       │                 │     │                 │
+       │ Extract         │     │ Read CSV        │
+       │ Transform       │     │ Join datasets   │
+       │ Load            │     │ Calculate       │
+       │                 │     │ Revenue         │
+       └────────┬────────┘     └────────┬────────┘
+                │                       │
+                ▼                       ▼
+       ┌─────────────────┐     ┌─────────────────┐
+       │ Pandas Parquet  │     │ Spark Parquet   │
+       │     Output      │     │     Output      │
+       └────────┬────────┘     └────────┬────────┘
+                │                       │
+                └───────────┬───────────┘
+                            ▼
+                  ┌───────────────────┐
+                  │ Data Quality      │
+                  │ Checks            │
+                  └─────────┬─────────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │ Business          │
+                  │ Analytics         │
+                  └───────────────────┘
 ```
 
 ---
@@ -56,14 +64,15 @@ The project simulates a real-world data pipeline where multiple raw CSV datasets
 ## Technologies
 
 * Python
+* Pandas
 * SQL
 * MySQL
 * Apache Spark
 * PySpark
-* Pandas
 * CSV
 * Parquet
 * ETL
+* Data Quality Checks
 * Git & GitHub
 
 ---
@@ -82,7 +91,15 @@ Ecommerce_Data_Engineering/
 │   │
 │   └── processed/
 │       ├── .gitkeep
-│       └── ecommerce_sales.parquet
+│       ├── ecommerce_sales.parquet
+│       └── pandas_ecommerce_sales.parquet
+│
+├── src/
+│   ├── .gitkeep
+│   ├── extract.py
+│   ├── transform.py
+│   ├── load.py
+│   └── pipeline.py
 │
 ├── spark/
 │   ├── ecommerce_spark_etl.py
@@ -93,9 +110,7 @@ Ecommerce_Data_Engineering/
 │   └── analytics_queries.sql
 │
 ├── analytics_output.txt
-│
 ├── .gitignore
-│
 └── README.md
 ```
 
@@ -103,7 +118,7 @@ Ecommerce_Data_Engineering/
 
 ## Raw Datasets
 
-The project uses four CSV datasets:
+The project uses four raw CSV datasets.
 
 ### Customers
 
@@ -112,6 +127,7 @@ Contains customer information such as:
 * Customer ID
 * Customer Name
 * City
+* Signup Date
 
 ### Products
 
@@ -142,17 +158,104 @@ Contains information about products included in each order:
 
 ---
 
-## ETL Pipeline
+## ETL Implementations
 
-The PySpark ETL pipeline performs the following steps:
+The project contains two ETL implementations.
 
-### 1. Extract
+### 1. Pandas ETL Pipeline
 
-Reads the raw CSV datasets using PySpark.
+The Pandas pipeline is implemented inside the `src/` directory.
 
-### 2. Transform
+```text
+src/
+├── extract.py
+├── transform.py
+├── load.py
+└── pipeline.py
+```
 
-The datasets are joined using the following relationships:
+#### Extract
+
+`extract.py` reads the four raw CSV datasets using Pandas.
+
+#### Transform
+
+`transform.py` performs:
+
+* Date conversion
+* Duplicate removal
+* Dataset joins
+* Product price enrichment
+* Revenue calculation
+* Customer and order information enrichment
+
+Revenue is calculated as:
+
+```text
+Revenue = Quantity × Price
+```
+
+#### Load
+
+`load.py` writes the transformed dataset to:
+
+```text
+data/processed/pandas_ecommerce_sales.parquet
+```
+
+#### Pipeline
+
+`pipeline.py` orchestrates the complete workflow:
+
+```text
+Extract → Transform → Load
+```
+
+Run the Pandas pipeline using:
+
+```bash
+python src/pipeline.py
+```
+
+---
+
+### 2. PySpark ETL Pipeline
+
+The PySpark pipeline is implemented inside the `spark/` directory.
+
+```text
+spark/
+├── ecommerce_spark_etl.py
+├── ecommerce_spark_analytics.py
+└── data_quality_check.py
+```
+
+The PySpark ETL pipeline:
+
+1. Reads raw CSV datasets
+2. Joins customers, products, orders, and order items
+3. Calculates revenue
+4. Creates the processed Parquet dataset
+
+The Spark output is stored in:
+
+```text
+data/processed/ecommerce_sales.parquet
+```
+
+Run the PySpark ETL pipeline using:
+
+```bash
+python spark/ecommerce_spark_etl.py
+```
+
+The PySpark pipeline successfully processed **18 records**.
+
+---
+
+## Data Transformation Logic
+
+The datasets are connected using the following relationships:
 
 ```text
 Orders
@@ -164,27 +267,17 @@ Orders
                          └── Product ID → Products
 ```
 
-Revenue is calculated using:
+Revenue calculation:
 
 ```text
 Revenue = Quantity × Price
 ```
 
-### 3. Load
-
-The transformed dataset is stored in Parquet format:
-
-```text
-data/processed/ecommerce_sales.parquet
-```
-
-The ETL pipeline successfully processed **18 records**.
-
 ---
 
 ## Data Quality Checks
 
-The project includes automated data quality validation.
+The project includes automated data quality validation using PySpark.
 
 The following checks are performed:
 
@@ -208,11 +301,17 @@ Duplicate order_item_id: 0
 DATA QUALITY CHECK PASSED
 ```
 
+Run the data quality checks using:
+
+```bash
+python spark/data_quality_check.py
+```
+
 ---
 
 ## Spark Analytics
 
-PySpark is used to generate business analytics from the processed Parquet dataset.
+The project uses PySpark to generate business analytics from the processed Parquet dataset.
 
 ### Analytics Performed
 
@@ -227,6 +326,12 @@ Completed-order revenue generated by the current dataset:
 
 ```text
 ₹171,700
+```
+
+Run Spark analytics using:
+
+```bash
+python spark/ecommerce_spark_analytics.py
 ```
 
 ---
@@ -268,25 +373,37 @@ git clone https://github.com/kunj-patel026/Ecommerce_Data_Engineering.git
 cd Ecommerce_Data_Engineering
 ```
 
-### Step 3: Run PySpark ETL
+### Step 3: Run Pandas ETL
+
+```bash
+python src/pipeline.py
+```
+
+This creates:
+
+```text
+data/processed/pandas_ecommerce_sales.parquet
+```
+
+### Step 4: Run PySpark ETL
 
 ```bash
 python spark/ecommerce_spark_etl.py
 ```
 
-This reads the raw CSV files and creates:
+This creates the Spark processed dataset:
 
 ```text
 data/processed/ecommerce_sales.parquet
 ```
 
-### Step 4: Run Data Quality Checks
+### Step 5: Run Data Quality Checks
 
 ```bash
 python spark/data_quality_check.py
 ```
 
-### Step 5: Run Spark Analytics
+### Step 6: Run Spark Analytics
 
 ```bash
 python spark/ecommerce_spark_analytics.py
@@ -305,8 +422,9 @@ This project demonstrates practical knowledge of:
 * Data validation
 * Data quality checks
 * Revenue calculations
-* Apache Spark
+* Pandas DataFrames
 * PySpark DataFrames
+* Apache Spark
 * Parquet data storage
 * SQL analytics
 * Python scripting
@@ -319,20 +437,20 @@ This project demonstrates practical knowledge of:
 The project demonstrates a complete mini data engineering workflow:
 
 ```text
-Raw Data
-   ↓
-Data Ingestion
-   ↓
+Raw CSV Data
+     ↓
+Data Extraction
+     ↓
 Data Transformation
-   ↓
+     ↓
 Data Quality Validation
-   ↓
+     ↓
 Parquet Storage
-   ↓
+     ↓
 Business Analytics
 ```
 
-This project was built as a practical portfolio project to demonstrate **entry-level Data Engineering skills**.
+The project also demonstrates the implementation of the ETL workflow using both **Pandas** and **PySpark**, providing practical exposure to traditional Python-based processing as well as distributed data processing concepts.
 
 ---
 
