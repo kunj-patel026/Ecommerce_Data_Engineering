@@ -1,63 +1,155 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, sum, count
+import logging
 
-# Create Spark session
+
+# ==============================
+# Logging Configuration
+# ==============================
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
+
+logger = logging.getLogger(__name__)
+
+
+# ==============================
+# Create Spark Session
+# ==============================
+
 spark = SparkSession.builder \
     .appName("EcommerceDataEngineering") \
+    .master("local[*]") \
     .getOrCreate()
 
-print("========== SPARK ETL STARTED ==========")
 
-# Read processed Parquet data
-df = spark.read.parquet(
-    "data/processed/ecommerce_sales.parquet"
-)
+logger.info("========== SPARK ETL STARTED ==========")
 
-print("Data loaded successfully!")
 
-# Show data
-df.show()
+try:
 
-# Show schema
-df.printSchema()
+    # ==============================
+    # Read Raw CSV Data
+    # ==============================
 
-# Total revenue
-total_revenue = df.select(
-    sum("revenue").alias("total_revenue")
-)
+    logger.info("Reading raw CSV data...")
 
-print("========== TOTAL REVENUE ==========")
-total_revenue.show()
+    customers = spark.read.option(
+        "header", True
+    ).option(
+        "inferSchema", True
+    ).csv("data/raw/customers.csv")
 
-# Revenue by city
-city_revenue = df.groupBy("city").agg(
-    sum("revenue").alias("total_revenue")
-).orderBy(
-    col("total_revenue").desc()
-)
+    products = spark.read.option(
+        "header", True
+    ).option(
+        "inferSchema", True
+    ).csv("data/raw/products.csv")
 
-print("========== REVENUE BY CITY ==========")
-city_revenue.show()
+    orders = spark.read.option(
+        "header", True
+    ).option(
+        "inferSchema", True
+    ).csv("data/raw/orders.csv")
 
-# Revenue by product
-product_revenue = df.groupBy("product_id").agg(
-    sum("revenue").alias("total_revenue"),
-    sum("quantity").alias("total_quantity")
-).orderBy(
-    col("total_revenue").desc()
-)
+    order_items = spark.read.option(
+        "header", True
+    ).option(
+        "inferSchema", True
+    ).csv("data/raw/order_items.csv")
 
-print("========== REVENUE BY PRODUCT ==========")
-product_revenue.show()
 
-# Count orders by status
-order_status = df.groupBy("status").agg(
-    count("order_id").alias("total_orders")
-)
+    logger.info("Raw CSV data loaded successfully")
 
-print("========== ORDERS BY STATUS ==========")
-order_status.show()
 
-print("========== SPARK ETL COMPLETED ==========")
+    # ==============================
+    # Join Data
+    # ==============================
 
-spark.stop()
+    logger.info("Joining datasets...")
+
+    df = order_items.join(
+        orders,
+        "order_id"
+    ).join(
+        products,
+        "product_id"
+    ).join(
+        customers,
+        "customer_id"
+    )
+
+
+    # ==============================
+    # Calculate Revenue
+    # ==============================
+
+    logger.info("Calculating revenue...")
+
+    from pyspark.sql.functions import col
+
+    df = df.withColumn(
+        "revenue",
+        col("quantity") * col("price")
+    )
+
+
+    # ==============================
+    # Select Required Columns
+    # ==============================
+
+    df = df.select(
+        "order_item_id",
+        "order_id",
+        "product_id",
+        "quantity",
+        "price",
+        "revenue",
+        "customer_id",
+        "order_date",
+        "status",
+        "name",
+        "city"
+    )
+
+
+    # ==============================
+    # Write Parquet
+    # ==============================
+
+    logger.info("Writing processed data to Parquet...")
+
+    df.write.mode(
+        "overwrite"
+    ).parquet(
+        "data/processed/ecommerce_sales.parquet"
+    )
+
+
+    logger.info("Parquet file created successfully")
+
+    logger.info(
+        "Total processed records: %s",
+        df.count()
+    )
+
+
+    logger.info("========== SPARK ETL COMPLETED ==========")
+
+
+except Exception as e:
+
+    logger.error(
+        "ETL pipeline failed: %s",
+        str(e)
+    )
+
+    raise
+
+
+finally:
+
+    spark.stop()
+
+    logger.info("Spark session stopped")

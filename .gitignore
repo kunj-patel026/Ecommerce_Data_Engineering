@@ -21,6 +21,9 @@ data/processed/*
 # Logs
 logs/
 
+# Generated analytics output
+analytics_output.txt
+
 # OS files
 Thumbs.db
 .DS_Store
