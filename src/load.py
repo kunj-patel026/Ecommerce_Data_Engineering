@@ -6,7 +6,7 @@ def load_data(transformed_data):
     os.makedirs("data/processed", exist_ok=True)
 
     # Output file
-    output_file = "data/processed/ecommerce_sales.parquet"
+    output_file = "data/processed/pandas_ecommerce_sales.parquet"
 
     # Save transformed data
     transformed_data.to_parquet(
