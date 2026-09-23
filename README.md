@@ -1,3 +1,9 @@
+![Python](https://img.shields.io/badge/Python-3.x-blue)
+![Apache Spark](https://img.shields.io/badge/Apache%20Spark-PySpark-orange)
+![SQL](https://img.shields.io/badge/SQL-MySQL-blue)
+![Data Engineering](https://img.shields.io/badge/Data%20Engineering-ETL-green)
+![Storage](https://img.shields.io/badge/Storage-Parquet-purple)
+
 # E-Commerce Data Engineering Pipeline
 
 An end-to-end **Data Engineering project** that demonstrates how raw e-commerce data can be transformed, validated, processed, and analyzed using **Python, SQL, Apache Spark, and PySpark**.
@@ -28,21 +34,21 @@ The project simulates a real-world data pipeline where multiple raw CSV datasets
               │ Read CSV        │
               │ Join datasets   │
               │ Calculate       │
-              │ Revenue        │
+              │ Revenue         │
               └────────┬────────┘
                        │
                        ▼
               ┌─────────────────┐
               │     Parquet     │
-              │ Processed Data  │
+              │  Processed Data │
               └────────┬────────┘
                        │
              ┌─────────┴─────────┐
              ▼                   ▼
-    ┌─────────────────┐  ┌─────────────────┐
-    │ Data Quality    │  │ Spark Analytics │
-    │     Checks      │  │                 │
-    └─────────────────┘  └─────────────────┘
+      ┌─────────────────┐  ┌─────────────────┐
+      │ Data Quality    │  │ Spark Analytics │
+      │     Checks      │  │                 │
+      └─────────────────┘  └─────────────────┘
 ```
 
 ---
@@ -87,6 +93,8 @@ Ecommerce_Data_Engineering/
 │   └── analytics_queries.sql
 │
 ├── analytics_output.txt
+│
+├── .gitignore
 │
 └── README.md
 ```
@@ -144,7 +152,7 @@ Reads the raw CSV datasets using PySpark.
 
 ### 2. Transform
 
-The datasets are joined using:
+The datasets are joined using the following relationships:
 
 ```text
 Orders
@@ -152,8 +160,8 @@ Orders
    ├── Customer ID → Customers
    │
    └── Order ID → Order Items
-                      │
-                      └── Product ID → Products
+                         │
+                         └── Product ID → Products
 ```
 
 Revenue is calculated using:
@@ -164,7 +172,7 @@ Revenue = Quantity × Price
 
 ### 3. Load
 
-The transformed dataset is stored as a **Parquet file**:
+The transformed dataset is stored in Parquet format:
 
 ```text
 data/processed/ecommerce_sales.parquet
@@ -191,6 +199,7 @@ Current dataset validation result:
 
 ```text
 Total Records: 18
+
 Negative Quantity Records: 0
 Negative Price Records: 0
 Invalid Status Records: 0
@@ -250,7 +259,7 @@ sql/analytics_queries.sql
 ### Step 1: Clone the Repository
 
 ```bash
-git clone <your-github-repository-url>
+git clone https://github.com/kunj-patel026/Ecommerce_Data_Engineering.git
 ```
 
 ### Step 2: Open the Project
@@ -333,6 +342,6 @@ This project was built as a practical portfolio project to demonstrate **entry-l
 
 MCA Graduate | Learning Data Engineering
 
-GitHub: `https://github.com/kunj-patel026`
+GitHub: https://github.com/kunj-patel026
 
-LinkedIn: `https://www.linkedin.com/in/kunj-patel-7617b91b5/`
+LinkedIn: https://www.linkedin.com/in/kunj-patel-7617b91b5/
